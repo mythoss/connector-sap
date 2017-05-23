@@ -1072,6 +1072,17 @@ public class SapConnector implements PoolableConnector, TestOp, SchemaOp, Search
         // set table type attributes
         setTableTypeAttributes(attributes, function.getTableParameterList(), function.getImportParameterList(), false);
 
+        
+        String passwordAttribute = OperationalAttributeInfos.PASSWORD.getName();
+        GuardedString password = getAttr(attributes, passwordAttribute, GuardedString.class, null);
+        // we need to set password
+        if (password == null) {
+        	String tempPwd = generateTempPassword();
+            JCoStructure passwordStructure = function.getImportParameterList().getStructure("PASSWORD");
+            passwordStructure.setValue(BAPIPWD, tempPwd.toString());
+        }
+        
+        
         // handle password & execute create user
         handlePassword(function, attributes, userName, false, true);
 
